@@ -341,7 +341,9 @@ class ReadView(context: Context, attrs: AttributeSet) :
             }
 
             MotionEvent.ACTION_MOVE -> {
-                if (!pressDown) return true
+                // 内容刷新（如跨章后预排版下一章时的 upContent）会经 cancelTouchGestures() 把
+                // pressDown 置为 false；但能收到 MOVE 说明手指仍在屏幕上，不应永久失去滚动能力。
+                if (!pressDown) pressDown = true
                 val absX = abs(startX - event.x)
                 val absY = abs(startY - event.y)
                 if (absX > slopSquare || absY > slopSquare) curPage.cancelHighlightTap()
